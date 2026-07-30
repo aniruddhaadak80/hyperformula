@@ -348,6 +348,14 @@ Total number of functions: **{{ $page.functionsCount }}**
 | MAXPOOL     | Calculates a smaller range which is a maximum of a Window_size, in a given Range, for every Stride element. | MAXPOOL(Range, Window_size, Stride)    |
 | TRANSPOSE   | Transposes the rows and columns of an array.                                                                | TRANSPOSE(Array)                       |
 
+::: tip
+`MAXPOOL` and `MEDIANPOOL` require the pooling window to tile `Range` exactly: `Window_size` must be a positive
+integer that is not greater than either dimension of `Range`, `Stride` must be a positive integer (defaulting to
+`Window_size`), and both dimensions of `Range`, reduced by `Window_size`, must be whole multiples of `Stride`.
+Otherwise, the functions return the `#VALUE!` error. For example, `MAXPOOL(A1:C3, 2)` returns `#VALUE!`, because a
+window of 2 cells cannot tile a range of 3 cells, while `MAXPOOL(A1:C3, 2, 1)` and `MAXPOOL(A1:D4, 2)` are valid.
+:::
+
 ### Operator
 
 | Function ID      | Description                                  | Syntax                      |
