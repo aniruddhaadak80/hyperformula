@@ -16,6 +16,8 @@ const detailedError = (errorType: ErrorType, message?: string): DetailedCellErro
 
 const poolDimensionsError = () => detailedError(ErrorType.VALUE, ErrorMessage.PoolDimensions)
 
+const POOL_FUNCTION_NAMES = ['MAXPOOL', 'MEDIANPOOL']
+
 const squareRange3x3 = [
   [3, 1, 2],
   [9, 7, 8],
@@ -36,7 +38,8 @@ const buildEngineWithSheet = (sheetContent: number[][]): { engine: HyperFormula,
   return {engine, sheetId}
 }
 
-describe.each(['MAXPOOL', 'MEDIANPOOL'])('Function %s dimension validation', (functionName: string) => {
+// A plain loop instead of `describe.each`, which is not available in the Jasmine-based browser test suite.
+POOL_FUNCTION_NAMES.forEach((functionName: string) => describe(`Function ${functionName} dimension validation`, () => {
   it('returns an error when the range dimensions are not a whole multiple of the window size', () => {
     const {engine, sheetId} = buildEngineWithSheet(squareRange3x3)
 
@@ -88,7 +91,7 @@ describe.each(['MAXPOOL', 'MEDIANPOOL'])('Function %s dimension validation', (fu
     expect(engine.calculateFormula(`=${functionName}(A1:D4, 2, -1)`, sheetId)).toEqualError(detailedError(ErrorType.NUM, ErrorMessage.ValueSmall))
     expect(engine.calculateFormula(`=${functionName}(A1:D4, 2, 1.5)`, sheetId)).toEqualError(detailedError(ErrorType.NUM, ErrorMessage.IntegerExpected))
   })
-})
+}))
 
 describe('Function MAXPOOL', () => {
   it('pools a range whose dimensions are a whole multiple of the window size into maximums', () => {
